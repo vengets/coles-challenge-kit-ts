@@ -15,10 +15,10 @@ export class CreateSummaryItemStream extends Transform {
 
     let order = OrderHelper.parseOrderFromCSV(chunk.toString());
     if(SummaryBuffer.getMapItemCount() < SUMMARY_BUFFER_THRESHOLD) {
-      SummaryBuffer.set(Number(order.customerId), order.product);
+      SummaryBuffer.set(Number(order.customerId), [order.product]);
     } else {
       // Call UpdateSummaryStream
-            -
+
     }
 
   }

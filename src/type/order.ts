@@ -1,6 +1,6 @@
 export interface IOrder {
-  id: number;
+  id: string;
   department: string;
   product: string;
-  customerId: number | null;
+  customerId: string | null;
 }

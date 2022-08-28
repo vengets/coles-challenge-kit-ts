@@ -1,4 +1,4 @@
-import { CustomerOrderGroupingJob } from './jobs/customer-order-grouping-job';
+import { CustomerOrderSummaryJob } from './jobs/customer-order-summary-job';
 import dotenv from 'dotenv';
 
 if(!dotenv.config()) {
@@ -9,7 +9,7 @@ const ORDERS_CSV_PATH: string = process.env.ORDERS_CSV_PATH || './data/Orders.cs
 const SUMMARY_OUTPUT_PATH: string = process.env.SUMMARY_OUTPUT_PATH || './output/summaries/GroupedOrders.json';
 
 const main = () => {
-  let job = new CustomerOrderGroupingJob(ORDERS_CSV_PATH, SUMMARY_OUTPUT_PATH);
+  let job = new CustomerOrderSummaryJob(ORDERS_CSV_PATH, SUMMARY_OUTPUT_PATH);
   job.run();
 };
 
