@@ -11,6 +11,7 @@ const { promisify } = require('util');
 import { pipeline } from 'stream';
 import { SummaryGroupingStream } from '../streams/summary-grouping-stream';
 import { FileHelper } from '../helper/file-helper';
+import { PopulateProductCountStream } from '../streams/populate-product-count-stream';
 
 const pipelineAsync = promisify(pipeline);
 
@@ -45,10 +46,7 @@ export class CustomerOrderSummaryJob extends Job {
     );
 
     let fileLines = await FileHelper.getLineCount(BUFFER_FILE_PATH);
-    console.log(`========= ${fileLines}`);
-
     fileLines = await FileHelper.getLineCount(BUFFER_FILE_PATH);
-    console.log(`========= ${fileLines}`);
 
     let summaryGrouping = new SummaryGroupingStream(fileLines);
     writeToSummaryFile = WriteStreamHelper.getWriteStream(this.summaryFilePath);
@@ -59,12 +57,20 @@ export class CustomerOrderSummaryJob extends Job {
       es.split(),
       summaryGrouping,
       writeToSummaryFile
-        // .on('finish', () => {
-        //   writeToSummaryFile = WriteStreamHelper.getAppendStream(this.summaryFilePath);
-        //   writeToSummaryFile.write(']}]');
-        //   writeToSummaryFile.close();
-        // })
     );
+
+    fileLines = await FileHelper.getLineCount(this.summaryFilePath);
+    let populateCount = new PopulateProductCountStream(fileLines);
+    let writeToBufferFile = WriteStreamHelper.getWriteStream(BUFFER_FILE_PATH);
+
+    await pipelineAsync(
+      ReadStreamHelper
+        .getReadStream(this.summaryFilePath),
+      es.split(),
+      populateCount,
+      writeToBufferFile
+    )
+
 
     return false;
   }

@@ -1,4 +1,9 @@
 export interface SummaryItem {
-  orderId: string;
-  products:[string];
+  customerId: string
+  summary: ProductCount[]
+}
+
+export interface ProductCount {
+  product: string;
+  count: number;
 }
