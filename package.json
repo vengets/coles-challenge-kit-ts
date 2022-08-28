@@ -29,6 +29,7 @@
     "trailingComma": "es5"
   },
   "dependencies": {
+    "csv-sorter": "^2.4.1",
     "dotenv": "^16.0.1",
     "event-stream": "^4.0.1",
     "fs": "^0.0.1-security",
