@@ -13,15 +13,4 @@ export class WriteStreamHelper {
     });
     return writeStream;
   }
-
-  public static getAppendStream(fileName: string): WriteStream {
-    let writeStream = createWriteStream(fileName, { 'flags': 'a'});
-    writeStream.on('finish', () => {
-      logger.info(`WriteStream done writing.`);
-    });
-    writeStream.on('error', (e) => {
-      logger.error(e.message);
-    });
-    return writeStream;
-  }
 }

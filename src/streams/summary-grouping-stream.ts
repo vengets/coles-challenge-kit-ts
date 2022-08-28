@@ -33,13 +33,13 @@ export class SummaryGroupingStream extends Transform {
       SummaryGroupingStream.customerId = customerId;
       switch (SummaryGroupingStream.rowCount ) {
         case 2:
-          callback(null, `{customerId: ${customerId}, products: [${product}`);
+          callback(null, `{"customerId": ${customerId}, "products": [${product}`);
           break;
         case this.totalRows:
-          callback(null, `]},{customerId: ${customerId}, products: [${product}]}]`);
+          callback(null, `]},{"customerId": ${customerId}, "products": [${product}]}]`);
           break;
         default:
-          callback(null, `]},\n{customerId: ${customerId}, products: [${product}`);
+          callback(null, `]},\n{"customerId": ${customerId}, "products": [${product}`);
       }
     } else
     {
