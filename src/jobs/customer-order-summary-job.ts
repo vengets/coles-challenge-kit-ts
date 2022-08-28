@@ -71,6 +71,12 @@ export class CustomerOrderSummaryJob extends Job {
       writeToBufferFile
     )
 
+    let writeResultToSummaryFile = WriteStreamHelper.getWriteStream(this.summaryFilePath);
+    await pipelineAsync(
+      ReadStreamHelper
+        .getReadStream(BUFFER_FILE_PATH),
+      writeResultToSummaryFile
+    );
 
     return false;
   }

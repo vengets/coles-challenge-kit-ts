@@ -5,5 +5,5 @@ export interface SummaryItem {
 
 export interface ProductCount {
   product: string;
-  count: number;
+  quantity: number;
 }

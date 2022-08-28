@@ -41,7 +41,7 @@ export class PopulateProductCountStream extends Transform {
     for(let key of map.keys()) {
       let pc: ProductCount = {
         product: key,
-        count: map.get(key) || 0
+        quantity: map.get(key) || 0
       }
       summaryObj.summary.push(pc);
     }
