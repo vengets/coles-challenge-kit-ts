@@ -2,7 +2,7 @@ import { readFileSync, rmSync, writeFileSync } from 'fs';
 
 export class FileUtil {
   public static writeToFile(fileName: string, contents: string) {
-    writeFileSync(fileName, contents);
+    return writeFileSync(fileName, contents);
   }
 
   public static readFromFile(fileName: string): string {
@@ -10,7 +10,7 @@ export class FileUtil {
   }
 
   public static deleteFile(fileName: string) {
-    rmSync('path/to/file', {
+    rmSync(fileName, {
       force: true,
     });
   }

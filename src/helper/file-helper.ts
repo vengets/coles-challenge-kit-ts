@@ -1,11 +1,11 @@
 const util = require('util');
 const exec = util.promisify(require('child_process').exec);
-import { log } from '../helper/logger';
+import { log } from './logger';
 
 const logger = log.getChildLogger({ name: 'FileHelper' });
 
 export class FileHelper {
-  public static async getLineCount(fileName: string) {
+  public static async getLineCount(fileName: string): Promise<number> {
     logger.debug(`Counting number of lines for ${fileName}`);
     let res = await exec(`wc ${fileName}`);
     let res1 = await exec(`wc ${fileName}`);
