@@ -1,5 +1,6 @@
 import { CustomerOrderSummaryJob } from './jobs/customer-order-summary-job';
 import dotenv from 'dotenv';
+import '../test/data/unordered.csv';
 
 if (!dotenv.config()) {
   throw new Error('Unable to initialize environment configuration!');

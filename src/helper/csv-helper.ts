@@ -22,8 +22,6 @@ export class CsvHelper {
         throw err;
       }
     });
-
-
     logger.debug(`[After sorting] Heap used: ${process.memoryUsage().heapUsed}, Heap Total: ${process.memoryUsage().heapTotal}`);
   }
 
