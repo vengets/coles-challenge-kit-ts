@@ -1,22 +1,22 @@
 import { Job } from './job';
 import { ReadStreamHelper } from '../helper/read-stream-helper';
-const es = require('event-stream');
 import { log } from '../helper/logger';
 import { OrdersWithCustomerIdStream } from '../streams/orders-with-customerId-stream';
 import { OrdersCsvRowToSummaryRowStream } from '../streams/orders-csv-row-to-summary-row-stream';
 import { WriteStreamHelper } from '../helper/write-stream-helper';
 import { CsvHelper } from '../helper/csv-helper';
-
-const { promisify } = require('util');
 import { pipeline } from 'stream';
 import { SummaryGroupingStream } from '../streams/summary-grouping-stream';
 import { FileHelper } from '../helper/file-helper';
 import { PopulateProductCountStream } from '../streams/populate-product-count-stream';
 
+const es = require('event-stream');
+const { promisify } = require('util');
 const pipelineAsync = promisify(pipeline);
 
 const logger = log.getChildLogger({ name: 'CustomerOrderGroupingJob' });
 const BUFFER_FILE_PATH: string = process.env.BUFFER_FILE_PATH || './output/summaries/buffer.csv';
+
 export class CustomerOrderSummaryJob extends Job {
   orderFilePath: string;
   summaryFilePath: string;
@@ -42,7 +42,7 @@ export class CustomerOrderSummaryJob extends Job {
       convertCSVToJSON,
       writeToSummaryFile.on('finish', async () => {
         await CsvHelper.sortCSV(this.summaryFilePath, BUFFER_FILE_PATH, 1);
-      })
+      }),
     );
 
     let fileLines = await FileHelper.getLineCount(BUFFER_FILE_PATH);
@@ -56,7 +56,7 @@ export class CustomerOrderSummaryJob extends Job {
         .getReadStream(BUFFER_FILE_PATH),
       es.split(),
       summaryGrouping,
-      writeToSummaryFile
+      writeToSummaryFile,
     );
 
     fileLines = await FileHelper.getLineCount(this.summaryFilePath);
@@ -68,14 +68,14 @@ export class CustomerOrderSummaryJob extends Job {
         .getReadStream(this.summaryFilePath),
       es.split(),
       populateCount,
-      writeToBufferFile
-    )
+      writeToBufferFile,
+    );
 
     let writeResultToSummaryFile = WriteStreamHelper.getWriteStream(this.summaryFilePath);
     await pipelineAsync(
       ReadStreamHelper
         .getReadStream(BUFFER_FILE_PATH),
-      writeResultToSummaryFile
+      writeResultToSummaryFile,
     );
 
     return false;

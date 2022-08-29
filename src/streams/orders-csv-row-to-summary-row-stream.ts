@@ -10,7 +10,6 @@ export class OrdersCsvRowToSummaryRowStream extends Transform {
   _transform(chunk: any, encoding: BufferEncoding, callback: TransformCallback) {
     logger.trace(`OrdersCsvRowToSummaryRowStream -> transform`);
     let order: IOrder = OrderHelper.parseOrderFromCSV(chunk.toString());
-    callback(null,order.customerId+','+order.product+'\n');
+    callback(null, order.customerId + ',' + order.product + '\n');
   }
-
 }
