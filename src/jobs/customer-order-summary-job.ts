@@ -60,7 +60,7 @@ export class CustomerOrderSummaryJob extends Job {
     );
 
     fileLines = await FileHelper.getLineCount(this.summaryFilePath);
-    let populateCount = new PopulateProductCountStream(fileLines);
+    let populateCount = new PopulateProductCountStream(fileLines+1);
     let writeToBufferFile = WriteStreamHelper.getWriteStream(BUFFER_FILE_PATH);
 
     await pipelineAsync(

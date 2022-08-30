@@ -6,19 +6,18 @@ import { ProductCount, SummaryItem } from '../type/summary-item';
 const logger = log.getChildLogger({ name: 'PopulateProductCountStream' });
 
 export class PopulateProductCountStream extends Transform {
-  static lineNo = 0;
-  static totalLines = 0;
+  lineNo = 0;
+  totalLines = 0;
 
   constructor(totalLines: number) {
     super();
-    PopulateProductCountStream.totalLines = totalLines + 1;
+    this.totalLines = totalLines;
   }
 
   _transform(chunk: any, encoding: BufferEncoding, callback: TransformCallback) {
-
-    PopulateProductCountStream.lineNo++;
+    this.lineNo++;
     let data = chunk.toString();
-    if (PopulateProductCountStream.lineNo == 1) {
+    if (this.lineNo == 1) {
       data = data.substring(1);
     }
     data = data.substring(0, data.length - 1);
@@ -46,13 +45,13 @@ export class PopulateProductCountStream extends Transform {
       summaryObj.summary.push(pc);
     }
     let response = `${JSON.stringify(summaryObj)}`;
-    if (PopulateProductCountStream.lineNo == 1) {
+    if (this.lineNo == 1) {
       response = '[' + response;
     }
-    if (PopulateProductCountStream.lineNo == PopulateProductCountStream.totalLines) {
+    if (this.lineNo == this.totalLines) {
       response += ']';
     }
-    if (PopulateProductCountStream.lineNo < PopulateProductCountStream.totalLines) {
+    if (this.lineNo < this.totalLines) {
       response += ',';
     }
     callback(null, response + '\n');
