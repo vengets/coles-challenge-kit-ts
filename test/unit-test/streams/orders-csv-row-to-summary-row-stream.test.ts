@@ -1,18 +1,20 @@
 import { OrdersCsvRowToSummaryRowStream } from '../../../src/streams/orders-csv-row-to-summary-row-stream';
 import { Readable } from 'stream';
+import { promisify } from 'util';
+import { pipeline } from 'stream/promises';
 
-describe('OrdersCsvRowToSummaryRowStream class tests', () => {
+const pipelineAsync = promisify(pipeline);
+describe('OrdersCsvRowToSummaryRowStream class tests',() => {
   describe('_transform() tests', () => {
     it('should transform single order from csv to (customerId and product) csv', () => {
       const transformStream = new OrdersCsvRowToSummaryRowStream();
       const items = ['1,Garden,Muffin - Mix - Strawberry Rhubarb,101'];
       let expectedResult = '101,Muffin - Mix - Strawberry Rhubarb\n';
-      Readable.from(items).pipe(transformStream);
-      transformStream.on('data', (data) => {
-        expect(data.toString()).toEqual(expectedResult);
-      });
-      transformStream.on('end', () => {
-      });
+      Readable.from(items).pipe(
+        transformStream)
+        .on('data', (data) => {
+          expect(data.toString()).toEqual(expectedResult);
+        });
     });
 
     it('should transform multiple orders successfully ', () => {
@@ -32,12 +34,12 @@ describe('OrdersCsvRowToSummaryRowStream class tests', () => {
       ];
 
       let index = 0;
-      Readable.from(items).pipe(transformStream);
-      transformStream.on('data', (data) => {
-        expect(data.toString()).toEqual(expectedResult[index++]);
-      });
-      transformStream.on('end', () => {
-      });
+      Readable.from(items)
+        .pipe(transformStream)
+        .on('data', (data) => {
+          expect(data.toString()).toEqual(expectedResult[index++]);
+        });
     });
+
   });
 });
