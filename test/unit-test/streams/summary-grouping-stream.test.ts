@@ -31,7 +31,7 @@ describe('SummaryGroupingStream class tests', () => {
       const items = [
         'customerId,product',
       ];
-      const transformStream = new SummaryGroupingStream(items.length  );
+      const transformStream = new SummaryGroupingStream(items.length);
       const expectedResult = ['[]'];
       let index = 0;
       Readable.from(items)
@@ -41,5 +41,26 @@ describe('SummaryGroupingStream class tests', () => {
         });
       await new Promise(process.nextTick);
     });
+
+    it('Construct valid json when last 2 records are from same customer', async () => {
+      const items = [
+        'customerId,product',
+        '1,apple',
+        '1,orange',
+      ];
+      const transformStream = new SummaryGroupingStream(items.length);
+      const expectedResult = [
+        '[',
+        '{"customerId": 1, "products": ["apple"',
+        ',"orange"]}]'];
+      let index = 0;
+      Readable.from(items)
+        .pipe(transformStream)
+        .on('data', (data) => {
+          expect(data.toString()).toEqual(expectedResult[index++]);
+        });
+      await new Promise(process.nextTick);
+    });
+
   });
 });
