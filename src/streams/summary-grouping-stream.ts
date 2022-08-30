@@ -4,14 +4,14 @@ import { log } from '../helper/logger';
 const logger = log.getChildLogger({ name: 'SummaryGroupingStream' });
 
 export class SummaryGroupingStream extends Transform {
-  static customerId: string = '';
-  static rowCount: number = 0;
+  customerId: string = '';
+  rowCount: number = 0;
   totalRows = 0;
 
   constructor(totalRows: number) {
     super();
     logger.info(`Total rows to be processed: ${totalRows}`);
-    this.totalRows = totalRows + 1;
+    this.totalRows = totalRows;
   }
 
   _transform(chunk: any, encoding: BufferEncoding, callback: TransformCallback) {
@@ -19,32 +19,30 @@ export class SummaryGroupingStream extends Transform {
     let index = data.indexOf(',');
     let customerId = data.substring(0, index);
     let product = data.substring(index + 1);
-    if (product.indexOf('"') > -1) {
-      logger.info(`Before Product = ${product}`);
-    }
     product = product.replaceAll('"', '\\"');
-    if (product.indexOf('"') > -1) {
-      logger.info(`After Product = ${product}`);
-    }
     product = `"${product}"`;
-    SummaryGroupingStream.rowCount++;
-    logger.debug(`Processing row:#${SummaryGroupingStream.rowCount} for ${customerId} & ${product}`);
+    this.rowCount++;
+    logger.debug(`Processing row:#${this.rowCount} for ${customerId} & ${product}`);
     if (customerId == 'customerId') {
-      callback(null, '[');
-    } else if (SummaryGroupingStream.customerId != customerId) {
-      SummaryGroupingStream.customerId = customerId;
-      switch (SummaryGroupingStream.rowCount) {
+      if(this.totalRows == 1) {
+        callback(null, '[]')
+      } else {
+        callback(null, '[');
+      }
+    } else if (this.customerId != customerId) {
+      this.customerId = customerId;
+      switch (this.rowCount) {
         case 2:
           callback(null, `{"customerId": ${customerId}, "products": [${product}`);
           break;
         case this.totalRows:
-          callback(null, `]},{"customerId": ${customerId}, "products": [${product}]}]`);
+          callback(null, `]},\n{"customerId": ${customerId}, "products": [${product}]}]`);
           break;
         default:
           callback(null, `]},\n{"customerId": ${customerId}, "products": [${product}`);
       }
     } else {
-      switch (SummaryGroupingStream.rowCount) {
+      switch (this.rowCount) {
         case this.totalRows:
           callback(null, `,${product}]}]`);
           break;

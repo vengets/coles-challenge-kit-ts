@@ -45,10 +45,10 @@ export class CustomerOrderSummaryJob extends Job {
       }),
     );
 
+    await new Promise(process.nextTick);
     let fileLines = await FileHelper.getLineCount(BUFFER_FILE_PATH);
     fileLines = await FileHelper.getLineCount(BUFFER_FILE_PATH);
-
-    let summaryGrouping = new SummaryGroupingStream(fileLines);
+    let summaryGrouping = new SummaryGroupingStream(fileLines+1);
     writeToSummaryFile = WriteStreamHelper.getWriteStream(this.summaryFilePath);
 
     await pipelineAsync(
