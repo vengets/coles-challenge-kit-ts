@@ -2,8 +2,9 @@ import { ReadStreamHelper } from '../../../src/helper/read-stream-helper';
 import path from 'path';
 import { FileUtil } from '../../utils/file-util';
 import { WriteStreamHelper } from '../../../src/helper/write-stream-helper';
-import { pipeline } from "stream";
+import { pipeline } from 'stream';
 import { promisify } from 'util';
+
 const pipelineAsync = promisify(pipeline);
 describe('WriteStreamHelper class tests', () => {
   describe('getWriteStream()', () => {
@@ -14,6 +15,13 @@ describe('WriteStreamHelper class tests', () => {
       return WriteStreamHelper.getWriteStream(fileName);
     }
 
+    beforeAll(() => {
+      FileUtil.deleteFile(testFilePath);
+    });
+    afterAll(() => {
+      FileUtil.deleteFile(testFilePath);
+    });
+
     it('should write file contents', async () => {
       let data = '1,department,prod,custId';
       FileUtil.writeToFile(csvFilePath, data);
@@ -23,7 +31,7 @@ describe('WriteStreamHelper class tests', () => {
       let writeStream = invokeMethod(testFilePath);
       await pipelineAsync(
         readStream,
-        writeStream
+        writeStream,
       );
       let fileContents = FileUtil.readFromFile(testFilePath);
       expect(fileContents).toEqual(data);

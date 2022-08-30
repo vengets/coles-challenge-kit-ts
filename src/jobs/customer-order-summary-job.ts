@@ -31,7 +31,7 @@ export class CustomerOrderSummaryJob extends Job {
   async run() {
     logger.info('Starting to execute CustomerOrderGroupingJob');
     let getOrdersWithCustomerId = new OrdersWithCustomerIdStream();
-    let convertCSVToJSON = new OrdersCsvRowToSummaryRowStream();
+    let removeExcessFields = new OrdersCsvRowToSummaryRowStream();
     let writeToSummaryFile = WriteStreamHelper.getWriteStream(this.summaryFilePath);
 
     await pipelineAsync(
@@ -39,7 +39,7 @@ export class CustomerOrderSummaryJob extends Job {
         .getReadStream(this.orderFilePath),
       es.split(),
       getOrdersWithCustomerId,
-      convertCSVToJSON,
+      removeExcessFields,
       writeToSummaryFile.on('finish', async () => {
         await CsvHelper.sortCSV(this.summaryFilePath, BUFFER_FILE_PATH, 1);
       }),
