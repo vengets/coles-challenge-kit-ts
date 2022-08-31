@@ -5,7 +5,7 @@ export interface Stock {
   productOrders: ProductOrders[]
 }
 
-interface ProductOrders {
+export interface ProductOrders {
   id: string,
   productName: string,
   quantitySoldToday: number
