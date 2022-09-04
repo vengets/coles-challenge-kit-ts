@@ -4,11 +4,11 @@ import { log } from '../helper/logger';
 import { OrdersWithCustomerIdStream } from '../streams/orders-with-customerId-stream';
 import { OrdersCsvRowToSummaryRowStream } from '../streams/orders-csv-row-to-summary-row-stream';
 import { WriteStreamHelper } from '../helper/write-stream-helper';
-import { CsvHelper } from '../helper/csv-helper';
 import { pipeline } from 'stream';
 import { SummaryGroupingStream } from '../streams/summary-grouping-stream';
 import { FileHelper } from '../helper/file-helper';
 import { PopulateProductCountStream } from '../streams/populate-product-count-stream';
+import { LineCountStream } from '../streams/line-count-stream';
 
 const es = require('event-stream');
 const { promisify } = require('util');
@@ -33,6 +33,8 @@ export class CustomerOrderSummaryJob extends Job {
     let getOrdersWithCustomerId = new OrdersWithCustomerIdStream();
     let removeExcessFields = new OrdersCsvRowToSummaryRowStream();
     let writeToSummaryFile = WriteStreamHelper.getWriteStream(this.summaryFilePath);
+    let countLines = new LineCountStream();
+    LineCountStream.numberOfLines = 0;
 
     await pipelineAsync(
       ReadStreamHelper
@@ -40,42 +42,39 @@ export class CustomerOrderSummaryJob extends Job {
       es.split(),
       getOrdersWithCustomerId,
       removeExcessFields,
-      writeToSummaryFile.on('finish', async () => {
-        await CsvHelper.sortCSV(this.summaryFilePath, BUFFER_FILE_PATH, 1);
-      }),
+      writeToSummaryFile
     );
+
+    FileHelper.sortFile(this.summaryFilePath);
 
     await new Promise(process.nextTick);
     let fileLines = await FileHelper.getLineCount(BUFFER_FILE_PATH);
     fileLines = await FileHelper.getLineCount(BUFFER_FILE_PATH);
     let summaryGrouping = new SummaryGroupingStream(fileLines+1);
+    let writeToBufferFile = WriteStreamHelper.getWriteStream(BUFFER_FILE_PATH);
+    LineCountStream.numberOfLines = 0;
+    countLines = new LineCountStream();
+    await pipelineAsync(
+      ReadStreamHelper
+        .getReadStream(this.summaryFilePath),
+      es.split(),
+      summaryGrouping,
+      countLines,
+      writeToBufferFile
+    );
+
+    FileHelper.amendFile(BUFFER_FILE_PATH, ']}]');
+
+    fileLines = await FileHelper.getLineCount(BUFFER_FILE_PATH);
+    let populateCount = new PopulateProductCountStream(fileLines+1);
     writeToSummaryFile = WriteStreamHelper.getWriteStream(this.summaryFilePath);
 
     await pipelineAsync(
       ReadStreamHelper
         .getReadStream(BUFFER_FILE_PATH),
       es.split(),
-      summaryGrouping,
-      writeToSummaryFile,
-    );
-
-    fileLines = await FileHelper.getLineCount(this.summaryFilePath);
-    let populateCount = new PopulateProductCountStream(fileLines+1);
-    let writeToBufferFile = WriteStreamHelper.getWriteStream(BUFFER_FILE_PATH);
-
-    await pipelineAsync(
-      ReadStreamHelper
-        .getReadStream(this.summaryFilePath),
-      es.split(),
       populateCount,
-      writeToBufferFile,
-    );
-
-    let writeResultToSummaryFile = WriteStreamHelper.getWriteStream(this.summaryFilePath);
-    await pipelineAsync(
-      ReadStreamHelper
-        .getReadStream(BUFFER_FILE_PATH),
-      writeResultToSummaryFile,
+      writeToSummaryFile,
     );
 
     return false;

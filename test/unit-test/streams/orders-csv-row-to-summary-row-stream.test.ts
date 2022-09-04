@@ -11,8 +11,9 @@ describe('OrdersCsvRowToSummaryRowStream class tests', () => {
         .pipe(transformStream)
         .on('data', (data) => {
           expect(data.toString()).toEqual(expectedResult);
-        })
-      await new Promise(process.nextTick);;
+        });
+      await new Promise(process.nextTick);
+      ;
     });
 
     it('should transform multiple orders successfully ', async () => {

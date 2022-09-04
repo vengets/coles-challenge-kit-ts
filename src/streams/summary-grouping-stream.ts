@@ -22,7 +22,7 @@ export class SummaryGroupingStream extends Transform {
     product = product.replaceAll('"', '\\"');
     product = `"${product}"`;
     this.rowCount++;
-    logger.debug(`Processing row:#${this.rowCount} for ${customerId} & ${product}`);
+    logger.debug(`Processing row:#${this.rowCount} for ${customerId} & ${product} of total ${this.totalRows} rows.`);
     if (customerId == 'customerId') {
       if(this.totalRows == 1) {
         callback(null, '[]')
@@ -35,20 +35,11 @@ export class SummaryGroupingStream extends Transform {
         case 2:
           callback(null, `{"customerId": ${customerId}, "products": [${product}`);
           break;
-        case this.totalRows:
-          callback(null, `]},\n{"customerId": ${customerId}, "products": [${product}]}]`);
-          break;
         default:
           callback(null, `]},\n{"customerId": ${customerId}, "products": [${product}`);
       }
     } else {
-      switch (this.rowCount) {
-        case this.totalRows:
-          callback(null, `,${product}]}]`);
-          break;
-        default:
-          callback(null, `,${product}`);
-      }
+      callback(null, `,${product}`);
     }
   }
 }

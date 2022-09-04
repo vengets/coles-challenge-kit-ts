@@ -21,7 +21,7 @@ export class PopulateProductCountStream extends Transform {
       data = data.substring(1);
     }
     data = data.substring(0, data.length - 1);
-    logger.info('PopulateProductCountStream => ' + data);
+    logger.info(`Line: ${this.lineNo} PopulateProductCountStream => ` + data + ` totalLines: ${this.totalLines} `);
     let intermediateSummaryObj: IntermediateSummary = JSON.parse(data);
     let summaryObj: SummaryItem = {
       customerId: intermediateSummaryObj.customerId,

@@ -1,8 +1,7 @@
-import { OrdersCsvRowToSummaryRowStream } from '../../../src/streams/orders-csv-row-to-summary-row-stream';
-import { Readable } from "stream";
+import { pipeline, Readable } from 'stream';
 import { OrdersWithCustomerIdStream } from '../../../src/streams/orders-with-customerId-stream';
-import { pipeline } from "stream";
 import { promisify } from 'util';
+
 const pipelineAsync = promisify(pipeline);
 describe('OrdersWithCustomerIdStream class tests', () => {
   describe('_transform() tests', () => {

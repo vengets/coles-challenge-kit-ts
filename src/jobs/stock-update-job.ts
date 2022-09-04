@@ -1,7 +1,6 @@
 import { Job } from './job';
 import { ReadStreamHelper } from '../helper/read-stream-helper';
-import { WriteStreamHelper } from '../helper/write-stream-helper';
-import { pipeline } from "stream";
+import { pipeline } from 'stream';
 import { OrdersCsvRowToProductOnlyRowStream } from '../streams/orders-csv-row-to-product-only-row-stream';
 import { MockRedisCacheStream } from '../streams/mock-redis-cache-stream';
 import * as fs from 'fs';
@@ -28,7 +27,7 @@ export class StockUpdateJob extends Job {
       ordersReadStream,
       es.split(),
       removeUnwantedFields,
-      updateRedisCache
+      updateRedisCache,
     );
 
     const XMLdata: string = fs.readFileSync(STOCK_XML_FILE_PATH).toString();

@@ -4,7 +4,7 @@ import { close, openSync, writeSync } from 'fs';
 
 const logger = log.getChildLogger({ name: 'CsvHelper' });
 
-export class CsvHelper {
+export default class CsvHelper {
   public static async sortCSV(fileName: string, destFile: string, sortColumn: number, reverse = false, sortWithHeader = false) {
     logger.info(`Sorting the CSV file: ${fileName}`);
     this.writeToFile(destFile, '');
