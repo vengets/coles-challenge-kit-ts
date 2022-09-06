@@ -10,6 +10,8 @@ if (!dotenv.config()) {
 
 const ORDERS_CSV_PATH: string = process.env.ORDERS_CSV_PATH || './data/Orders.csv';
 const SUMMARY_OUTPUT_PATH: string = process.env.SUMMARY_OUTPUT_PATH || './output/summaries/GroupedOrders.json';
+const STOCK_INPUT = process.env.STOCK_XML_FILE_PATH || './data/Stock.xml';
+const STOCK_OUTPUT = process.env.STOCK_OUTPUT_PATH || './output/Stock.xml';
 
 const main = async () => {
   let showChoice = true;
@@ -23,7 +25,7 @@ const main = async () => {
         await job.run();
         break;
       case 2:
-        job = new StockUpdateJob();
+        job = new StockUpdateJob(STOCK_INPUT, ORDERS_CSV_PATH, STOCK_OUTPUT);
         await job.run();
         break;
       default:

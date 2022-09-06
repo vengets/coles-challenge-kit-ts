@@ -13,13 +13,19 @@ const es = require('event-stream');
 const { promisify } = require('util');
 const pipelineAsync = promisify(pipeline);
 
-const STOCK_XML_FILE_PATH = process.env.STOCK_XML_FILE_PATH || './data/Stock.xml';
-const ORDERS_CSV_PATH: string = process.env.ORDERS_CSV_PATH || './data/Orders.csv';
-const STOCK_OUTPUT_PATH = process.env.STOCK_OUTPUT_PATH || './output/Stock.xml';
-
 export class StockUpdateJob extends Job {
+  stockInputFilePath;
+  ordersFilePath;
+  stockOutputFilePath;
+
+  constructor(stockInputFile: string, ordersFile: string, stockOutputFile: string) {
+    super();
+    this.stockInputFilePath = stockInputFile;
+    this.stockOutputFilePath = stockOutputFile;
+    this.ordersFilePath = ordersFile;
+  }
   async run() {
-    let ordersReadStream = ReadStreamHelper.getReadStream(ORDERS_CSV_PATH);
+    let ordersReadStream = ReadStreamHelper.getReadStream(this.ordersFilePath);
     let removeUnwantedFields = new OrdersCsvRowToProductOnlyRowStream();
     let updateRedisCache = new MockRedisCacheStream();
 
@@ -30,11 +36,11 @@ export class StockUpdateJob extends Job {
       updateRedisCache,
     );
 
-    const XMLdata: string = fs.readFileSync(STOCK_XML_FILE_PATH).toString();
+    const XMLdata: string = fs.readFileSync(this.stockInputFilePath).toString();
     const jsonData: Stock = new XmlToJsonStream().transform(XMLdata);
     const updatedStock = new UpdateStockQuantityFromRedisStream().transform(jsonData);
     const xmlContent = new JsonToXmlStream().transform(updatedStock);
-    fs.writeFileSync(STOCK_OUTPUT_PATH, xmlContent);
+    fs.writeFileSync(this.stockOutputFilePath, xmlContent);
   }
 
 }

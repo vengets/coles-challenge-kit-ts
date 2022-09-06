@@ -48,8 +48,8 @@ export class CustomerOrderSummaryJob extends Job {
     FileHelper.sortFile(this.summaryFilePath);
 
     await new Promise(process.nextTick);
-    let fileLines = await FileHelper.getLineCount(BUFFER_FILE_PATH);
-    fileLines = await FileHelper.getLineCount(BUFFER_FILE_PATH);
+    let fileLines = await FileHelper.getLineCount(this.summaryFilePath);
+    fileLines = await FileHelper.getLineCount(this.summaryFilePath);
     let summaryGrouping = new SummaryGroupingStream(fileLines+1);
     let writeToBufferFile = WriteStreamHelper.getWriteStream(BUFFER_FILE_PATH);
     LineCountStream.numberOfLines = 0;

@@ -2,8 +2,6 @@ import { FileUtil } from '../../utils/file-util';
 import * as path from 'path';
 import { CustomerOrderSummaryJob } from '../../../src/jobs/customer-order-summary-job';
 
-// import CsvHelper from '../../../src/helper/csv-helper';
-
 describe('CustomerOrderSummaryJob class tests', () => {
   const INPUT_FILE_PATH = path.join(__dirname, '../../data/summary-job-input.csv');
   const OUTPUT_FILE_PATH = path.join(__dirname, '../../data/summary-job-output.json');
@@ -22,16 +20,13 @@ describe('CustomerOrderSummaryJob class tests', () => {
     FileUtil.writeToFile(INPUT_FILE_PATH, inputFileContents);
     FileUtil.writeToFile(OUTPUT_FILE_PATH, '');
 
-
-    // const mockFn = jest.fn().mockResolvedValue(1);
-    // CsvHelper.sortCSV = mockFn;
-
     const outputFileContents = FileUtil.readFromFile(OUTPUT_FILE_PATH);
     expect(outputFileContents).toEqual('');
 
-    // await invokeJob();
+    await invokeJob();
 
-    expect(true).toBeTruthy();
+    const output = FileUtil.readFromFile(OUTPUT_FILE_PATH);
+    expect(output).toEqual('[{"customerId":554,"summary":[{"product":"Scale","quantity":1}]}]\n');
 
   });
 });

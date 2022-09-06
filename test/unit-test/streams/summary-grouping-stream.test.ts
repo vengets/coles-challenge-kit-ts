@@ -16,7 +16,7 @@ describe('SummaryGroupingStream class tests', () => {
         '{"customerId": 1, "products": ["GardenMuffin - Mix - Strawberry Rhubarb"',
         ',"IndustrialPork - Belly Fresh"',
         ']},\n{"customerId": 2, "products": ["ElectronicsSobe - Orange Carrot"',
-        ']},\n{"customerId": 3, "products": ["Outdoors,Stock - Fish"]}]'];
+        ']},\n{"customerId": 3, "products": ["Outdoors,Stock - Fish"'];
 
       let index = 0;
       Readable.from(items)
@@ -52,7 +52,7 @@ describe('SummaryGroupingStream class tests', () => {
       const expectedResult = [
         '[',
         '{"customerId": 1, "products": ["apple"',
-        ',"orange"]}]'];
+        ',"orange"'];
       let index = 0;
       Readable.from(items)
         .pipe(transformStream)
